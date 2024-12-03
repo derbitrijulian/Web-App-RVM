@@ -17,7 +17,10 @@ export default function Page() {
                 <Link href="/login">
                     <button className="py-3 bg-primary rounded-full w-52 text-bgSecondary font-semibold text-xl">Masuk</button>
                 </Link>
-                <button className="py-3 bg-secondary rounded-full w-52 text-text-primary font-semibold text-xl">Daftar</button>
+
+                <Link href="/registration">
+                    <button className="py-3 bg-secondary rounded-full w-52 text-text-primary font-semibold text-xl">Daftar</button>
+                </Link>
             </div>
         </div>
     )
