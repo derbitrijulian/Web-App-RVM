@@ -10,7 +10,7 @@ export default function Page() {
         </Link>
 
         <h1 className="text-bgSecondary font-semibold w-full text-center text-[20px] pb-6 pt-1">
-          Berita
+          Beritas.
         </h1>
       </div>
       <div className="bg-bgSecondary h-full rounded-t-[36px] pt-10 pb-8">
