@@ -1,9 +1,50 @@
-import Image from 'next/image';
-import Link from 'next/link';
+"use client";
+import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
+import Image from "next/image";
+import Link from "next/link";
+import { setCookie } from "nookies";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [error, setError] = useState("");
+  const router = useRouter()
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+    const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+    const token = await userCredential.user.getIdToken();
+
+    setCookie(null, "accessToken", token, {
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      path: "/",
+    })
+      // Redirect to the home page or dashboard
+      // window.location.href = "/home";
+      router.push("/home")
+      
+    } catch (error) {
+      setError("Email atau kata sandi salah!");
+    }
+  };
+
   return (
-    <div className="bg-primary h-screen pt-[35px] ">
+    <div className="bg-primary h-screen pt-[35px]">
       <div className="flex items-center justify-center">
         <Link href="/onboarding" className="absolute left-8 top-[44px]">
           <Image src="/svg/image-back.svg" alt="Back" width={14} height={25} />
@@ -19,48 +60,58 @@ export default function Page() {
       </p>
 
       <div className="bg-bgSecondary h-[527px] rounded-t-[36px] pt-20 px-9">
-        <div>
-          <label className="text-text-primary text-sm font-medium text-[15px]">
-            Nama Pengguna atau Email
-          </label>
-          <input
-            type="text"
-            placeholder="Masukkan Nama Pengguna atau Email"
-            className="mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          />
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label className="text-text-primary text-sm font-medium text-[15px]">
+              Nama Pengguna atau Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Masukkan Nama Pengguna atau Email"
+              value={formData.email}
+              onChange={handleChange}
+              className="mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
 
-        <div className="mt-6">
-          <label className="text-text-primary text-sm font-medium text-[15px] flex justify-between">
-            <span>Kata Sandi</span>
-            <Link href="/forgot-password">
-              <p className="text-primary text-[12px] cursor-pointer hover:underline">
-                Lupa Password?
-              </p>
-            </Link>
-          </label>
+          <div className="mt-6">
+            <label className="text-text-primary text-sm font-medium text-[15px] flex justify-between">
+              <span>Kata Sandi</span>
+              <Link href="/forgot-password">
+                <p className="text-primary text-[12px] cursor-pointer hover:underline">
+                  Lupa Password?
+                </p>
+              </Link>
+            </label>
 
-          <input
-            type="text"
-            placeholder="Masukkan Kata Sandi"
-            className="mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          />
-        </div>
+            <input
+              type="password"
+              name="password"
+              placeholder="Masukkan Kata Sandi"
+              value={formData.password}
+              onChange={handleChange}
+              className="mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
 
-        <div className="grid justify-center gap-3 pt-12 pb-10">
-          <Link href="/home">
-            <button className="py-3 bg-primary rounded-xl w-52 text-bgSecondary font-semibold text-xl">
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+          <div className="grid justify-center gap-3 pt-12 pb-10">
+            <button
+              type="submit"
+              className="py-3 bg-primary rounded-xl w-52 text-bgSecondary font-semibold text-xl"
+            >
               Masuk
             </button>
-          </Link>
 
-
-          <Link href="/registration">
-            <button className="py-3 bg-secondary rounded-xl w-52 text-text-primary font-semibold text-xl">
-              Daftar
-            </button>
-          </Link>
-        </div>
+            <Link href="/registration">
+              <button className="py-3 bg-secondary rounded-xl w-52 text-text-primary font-semibold text-xl">
+                Daftar
+              </button>
+            </Link>
+          </div>
+        </form>
       </div>
     </div>
   );
