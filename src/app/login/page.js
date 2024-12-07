@@ -54,6 +54,7 @@ export default function Page() {
             </button>
           </Link>
 
+
           <Link href="/registration">
             <button className="py-3 bg-secondary rounded-xl w-52 text-text-primary font-semibold text-xl">
               Daftar
