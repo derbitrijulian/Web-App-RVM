@@ -1,9 +1,29 @@
+'use client';
+
+import { useState } from 'react';
+import { auth } from '../firebase'; // Sesuaikan path dengan lokasi file firebaseConfig.js
+import { sendPasswordResetEmail } from 'firebase/auth';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Page() {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleForgotPassword = async () => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setSuccess('Email reset password telah dikirim!');
+      setError('');
+    } catch (err) {
+      setError('Terjadi kesalahan, periksa kembali alamat email Anda.');
+      setSuccess('');
+    }
+  };
+
   return (
-    <div className="bg-primary h-screen pt-[35px] ">
+    <div className="bg-primary h-screen pt-[35px]">
       <div className="flex items-center justify-center">
         <Link href="/login" className="absolute left-8 top-[44px]">
           <Image src="/svg/image-back.svg" alt="Back" width={14} height={25} />
@@ -19,10 +39,8 @@ export default function Page() {
           <h1 className="text-text-primary font-semibold text-[20px]">
             Lupa Kata Sandi?
           </h1>
-
           <p className="text-text-primary font-regular text-[10px] pt-3 pb-5">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Masukkan alamat email Anda untuk menerima tautan reset password.
           </p>
         </div>
 
@@ -31,30 +49,34 @@ export default function Page() {
             Masukkan alamat Email
           </label>
           <input
-            type="text"
-            id="email"
-            input="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="Masukkan alamat Email"
             className="mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
         <div className="grid justify-center gap-3 pt-5 pb-3">
-          <Link href="/new-password">
-            <button className="py-3 bg-primary rounded-xl w-52 text-bgSecondary font-semibold text-xl">
-              Verifikasi
-            </button>
-          </Link>
+          <button
+            onClick={handleForgotPassword}
+            className="py-3 bg-primary rounded-xl w-52 text-bgSecondary font-semibold text-xl"
+          >
+            Kirim!
+          </button>
         </div>
+
+        {success && <p className="text-green-500 text-sm text-center">{success}</p>}
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         <div className="text-text-primary text-xs font-regular w-full flex justify-center pb-14">
           <span>
-            Belum punya akun ?{' '}
+            Belum punya akun?{' '}
             <Link
               href="/registration"
               className="hover:underline text-primary w-full"
             >
-              Masuk
+              Daftar
             </Link>
           </span>
         </div>
