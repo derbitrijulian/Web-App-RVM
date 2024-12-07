@@ -15,7 +15,7 @@ export default function Page() {
       </div>
 
       <p className="text-bgSecondary text-sm font-regular text-center text-[12px] pt-1 pb-4 pl-20 pr-20">
-        Silahkan masuk atau daftar jika belum mempunyai akun
+        Silahkan masuk atau daftar jika belum mempunyai akun.
       </p>
 
       <div className="bg-bgSecondary h-[527px] rounded-t-[36px] pt-20 px-9">
