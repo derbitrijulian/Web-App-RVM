@@ -4,16 +4,27 @@ import Link from 'next/link';
 export default function Page() {
   return (
     <div className="bg-primary h-screen pt-[35px]">
-      <div className="flex items-center justify-center">
-        <Link href="/home" className=" absolute left-6 top-[44px]">
-          <Image src="/svg/image-back.svg" alt="Back" width={14} height={25} />
-        </Link>
+      <div className="absolute ">
+        <div className="flex items-center justify-between px-6">
+          {/* Back Button */}
+          <Link href="/home">
+            <button className="text-white">
+              <Image
+                src="/svg/image-back.svg"
+                alt="Back"
+                width={14}
+                height={25}
+              />
+            </button>
+          </Link>
 
-        <h1 className="text-bgSecondary font-semibold w-full text-center text-[20px] pb-6 pt-1">
-          Beritas.
-        </h1>
+          {/* Page Title */}
+          <h1 className="text-bgSecondary font-semibold w-full text-start text-[24px] pb-6 pt-4 pl-7">
+            Berita
+          </h1>
+        </div>
       </div>
-      <div className="bg-bgSecondary h-full rounded-t-[36px] pt-10 pb-8">
+      <div className="bg-bgSecondary h-full rounded-t-[36px] pt-10 mt-16">
         <div className="grid gap-8 px-5">
           {/* image 1 */}
           <div className="flex gap-8">
@@ -33,9 +44,11 @@ export default function Page() {
                 <p className="text-[10px] font-medium text-primary">
                   6 jam yang lalu
                 </p>
-                <p className="text-[10px] font-medium text-primary hover:underline">
-                  Selengkapnya
-                </p>
+                <Link href="/view-news">
+                  <p className="text-[10px] font-medium text-primary hover:underline">
+                    Selengkapnya
+                  </p>
+                </Link>
               </div>
             </div>
           </div>

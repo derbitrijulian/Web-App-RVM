@@ -1,23 +1,51 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function Page() {
+export default function NewsPage() {
   return (
-    <div className="relative">
-      <Image src="/png/image-news1.png" alt="news1" width={609} height={609} />
-      <div className="h-screen pt-[35px]">
-        <div className="flex items-center justify-center">
-          <Link href="/home" className=" absolute left-6 top-[44px]">
-            <Image
-              src="/svg/image-back.svg"
-              alt="Back"
-              width={14}
-              height={25}
-            />
+    <div className="relative h-screen pt-[35px]">
+      {/* Background Image */}
+      <Image
+        src="/png/image-news1.png"
+        alt="news 1"
+        layout="fill"
+        objectFit="cover"
+        quality={100}
+        priority
+        className="z-0"
+      />
+
+      {/* Header */}
+      <div className="absolute inset-0 z-10 bg-black bg-opacity-30">
+        <div className="flex items-center justify-between p-4">
+          {/* Back Button */}
+          <Link href="/news">
+            <button className="text-white">
+              <Image
+                src="/svg/image-back.svg"
+                alt="Back"
+                width={14}
+                height={25}
+              />
+            </button>
           </Link>
-          <h1 className="text-bgSecondary absolute font-semibold w-full text-center text-[20px] pb-6 pt-1">
+
+          {/* Page Title */}
+          <h1 className="text-bgSecondary font-semibold w-full text-start text-[24px] pb-6 pt-4 pl-7">
             Berita
           </h1>
+        </div>
+
+        {/* Content Section */}
+        <div className="absolute bottom-0 bg-white rounded-t-3xl p-6">
+          <h2 className="text-xl font-bold mb-2 text-primary">
+            Sinar Mas Resmikan Reverse Vending Machine Di Kalibata Plaza
+          </h2>
+          <p className="text-primary mb-4">6 jam yang lalu</p>
+          <p className="text-text-primary leading-relaxed">
+            Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do
+            Eiusmod Tempor Incididunt Ut Labore Et Dolore Magna Aliqua.
+          </p>
         </div>
       </div>
     </div>
