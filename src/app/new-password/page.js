@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function Page() {
+export default function newpasswordPage() {
   return (
     <div className="bg-primary h-screen pt-[35px] ">
       <div className="flex items-center justify-center">

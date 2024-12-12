@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { IoHomeOutline } from 'react-icons/io5';
 import { CiLocationOn, CiUser } from 'react-icons/ci';
 import { FiActivity } from 'react-icons/fi';
+import Link from 'next/link';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -33,19 +34,21 @@ export default function Navbar() {
           </div>
           <span className="text-xs font-medium">Lokasi</span>
         </li>
-        <li className="flex flex-col items-center transform">
-          <div className="rounded-full p-6 bg-primary -translate-y-11">
-            <Image
-              src="/svg/icon-scan.svg"
-              alt="icon scan"
-              width={42}
-              height={42}
-            />
-          </div>
-          <span className="-translate-y-8 text-xs font-medium text-black">
-            Scan
-          </span>
-        </li>
+        <Link href="/qr">
+          <li className="flex flex-col items-center transform">
+            <div className="rounded-full p-6 bg-primary -translate-y-11">
+              <Image
+                src="/svg/icon-scan.svg"
+                alt="icon scan"
+                width={42}
+                height={42}
+              />
+            </div>
+            <span className="-translate-y-8 text-xs font-medium text-black">
+              Scan
+            </span>
+          </li>
+        </Link>
         <li
           className={`flex flex-col items-center ${
             isActive('/aktifitas') ? 'text-primary' : 'text-black'
