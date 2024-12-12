@@ -1,20 +1,20 @@
-"use client";
-import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
-import Image from "next/image";
-import Link from "next/link";
-import { setCookie } from "nookies";
-import { useRouter } from "next/navigation";
+'use client';
+import { useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
+import Image from 'next/image';
+import Link from 'next/link';
+import { setCookie } from 'nookies';
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
-  const [error, setError] = useState("");
-  const router = useRouter()
+  const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,24 +27,27 @@ export default function Page() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-    const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
-    const token = await userCredential.user.getIdToken();
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      const token = await userCredential.user.getIdToken();
 
-    setCookie(null, "accessToken", token, {
-      maxAge: 30 * 24 * 60 * 60, // 30 days
-      path: "/",
-    })
+      setCookie(null, 'accessToken', token, {
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+        path: '/',
+      });
       // Redirect to the home page or dashboard
       // window.location.href = "/home";
-      router.push("/home")
-      
+      router.push('/home');
     } catch (error) {
-      setError("Email atau kata sandi salah!");
+      setError('Email atau kata sandi salah!');
     }
   };
 
   return (
-    <div className="bg-primary h-screen pt-[35px]">
+    <div className="bg-primary pt-[35px]">
       <div className="flex items-center justify-center">
         <Link href="/onboarding" className="absolute left-8 top-[44px]">
           <Image src="/svg/image-back.svg" alt="Back" width={14} height={25} />
@@ -59,7 +62,7 @@ export default function Page() {
         Silahkan masuk atau daftar jika belum mempunyai akun.
       </p>
 
-      <div className="bg-bgSecondary h-[527px] rounded-t-[36px] pt-20 px-9">
+      <div className="bg-bgSecondary h-full rounded-t-[36px] pt-20 px-9">
         <form onSubmit={handleSubmit}>
           <div>
             <label className="text-text-primary text-sm font-medium text-[15px]">

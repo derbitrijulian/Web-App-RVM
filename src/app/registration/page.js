@@ -1,24 +1,27 @@
-"use client";
+'use client';
 
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-import { auth, db } from "../firebase"; // Pastikan konfigurasi Firebase benar
-import { doc, setDoc } from "firebase/firestore";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from 'firebase/auth';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
+import { auth, db } from '../firebase'; // Pastikan konfigurasi Firebase benar
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function Page() {
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    phone: "",
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phone: '',
   });
 
   const [checked, setChecked] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [verificationSent, setVerificationSent] = useState(false);
 
   const handleChange = (e) => {
@@ -33,12 +36,12 @@ export default function Page() {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Password do not match");
+      setError('Password do not match');
       return;
     }
 
     if (!checked) {
-      setError("You must agree to the terms and conditions");
+      setError('You must agree to the terms and conditions');
       return;
     }
 
@@ -52,7 +55,7 @@ export default function Page() {
       const user = userCredential.user;
 
       // Store user data in Firestore
-      await setDoc(doc(db, "users", user.uid), {
+      await setDoc(doc(db, 'users', user.uid), {
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
@@ -62,16 +65,18 @@ export default function Page() {
 
       // Send email verification
       await sendEmailVerification(user);
-      setSuccess("Registration successful! A verification email has been sent.");
+      setSuccess(
+        'Registration successful! A verification email has been sent.'
+      );
       setVerificationSent(true);
 
       // Reset form
       setFormData({
-        fullName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        phone: "",
+        fullName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        phone: '',
       });
       setChecked(false);
     } catch (error) {
@@ -80,12 +85,14 @@ export default function Page() {
   };
 
   return (
-    <div className="bg-primary h-screen pt-[34px]">
+    <div className="bg-primary pt-[34px]">
       <div className="flex items-center justify-center">
         <Link href="/login" className="absolute left-8 top-[44px]">
           <Image src="/svg/image-back.svg" alt="Back" width={14} height={25} />
         </Link>
-        <h1 className="text-bgSecondary font-semibold w-full text-center text-[28px]">Daftar</h1>
+        <h1 className="text-bgSecondary font-semibold w-full text-center text-[28px]">
+          Daftar
+        </h1>
       </div>
       <p className="text-bgSecondary text-sm font-regular text-center text-[12px] pt-1 pb-4 px-12">
         Silahkan isi form untuk bergabung
@@ -94,7 +101,10 @@ export default function Page() {
         <div className="bg-bgSecondary h-full rounded-t-[36px] pt-20 px-9">
           {/* Full Name Field */}
           <div>
-            <label className="text-text-primary text-sm font-medium" htmlFor="fullName">
+            <label
+              className="text-text-primary text-sm font-medium"
+              htmlFor="fullName"
+            >
               Nama Lengkap
             </label>
             <input
@@ -110,7 +120,9 @@ export default function Page() {
           </div>
           {/* Email Field */}
           <div className="mt-3">
-            <label className="text-text-primary text-sm font-medium">Email</label>
+            <label className="text-text-primary text-sm font-medium">
+              Email
+            </label>
             <input
               required
               type="email"
@@ -123,7 +135,9 @@ export default function Page() {
           </div>
           {/* Password Field */}
           <div className="mt-3">
-            <label className="text-text-primary text-sm font-medium">Kata Sandi</label>
+            <label className="text-text-primary text-sm font-medium">
+              Kata Sandi
+            </label>
             <input
               required
               type="password"
@@ -136,7 +150,9 @@ export default function Page() {
           </div>
           {/* Confirm Password Field */}
           <div className="mt-3">
-            <label className="text-text-primary text-sm font-medium">Konfirmasi Kata Sandi</label>
+            <label className="text-text-primary text-sm font-medium">
+              Konfirmasi Kata Sandi
+            </label>
             <input
               required
               type="password"
@@ -149,7 +165,9 @@ export default function Page() {
           </div>
           {/* Phone Field */}
           <div className="mt-3">
-            <label className="text-text-primary text-sm font-medium">Nomor Hp</label>
+            <label className="text-text-primary text-sm font-medium">
+              Nomor Hp
+            </label>
             <input
               required
               type="text"
@@ -169,7 +187,9 @@ export default function Page() {
                 onChange={() => setChecked(!checked)}
                 className="peer h-5 w-5 cursor-pointer rounded border border-gray-300 checked:bg-primary"
               />
-              <span className="ml-2 text-xs">Saya menyetujui Syarat dan Ketentuan</span>
+              <span className="ml-2 text-xs">
+                Saya menyetujui Syarat dan Ketentuan
+              </span>
             </label>
           </div>
           {/* Submit Button */}

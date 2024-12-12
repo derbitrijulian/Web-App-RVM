@@ -23,7 +23,7 @@ export default function Page() {
   };
 
   return (
-    <div className="bg-primary h-screen pt-[35px]">
+    <div className="bg-primary pt-[35px]">
       <div className="flex items-center justify-center">
         <Link href="/login" className="absolute left-8 top-[44px]">
           <Image src="/svg/image-back.svg" alt="Back" width={14} height={25} />
@@ -34,7 +34,7 @@ export default function Page() {
         </h1>
       </div>
 
-      <div className="bg-bgSecondary h-[559px] rounded-t-[36px] pt-20 px-9">
+      <div className="bg-bgSecondary h-full rounded-t-[36px] pt-20 px-9">
         <div>
           <h1 className="text-text-primary font-semibold text-[20px]">
             Lupa Kata Sandi?
@@ -66,7 +66,9 @@ export default function Page() {
           </button>
         </div>
 
-        {success && <p className="text-green-500 text-sm text-center">{success}</p>}
+        {success && (
+          <p className="text-green-500 text-sm text-center">{success}</p>
+        )}
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         <div className="text-text-primary text-xs font-regular w-full flex justify-center pb-14">
