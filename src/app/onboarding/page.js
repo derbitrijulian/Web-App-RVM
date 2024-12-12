@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function Page() {
+export default function onboardingPage() {
   return (
     <div className="bg-bgSecondary h-screen">
       <div className="pt-[154px]">
