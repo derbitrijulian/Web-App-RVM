@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function Page() {
   return (
-    <div className="bg-primary h-screen">
+    <div className="bg-primary h-full">
       {/* Header */}
       <div className="px-8 pt-7">
         <div className="flex justify-between items-center">
@@ -35,10 +35,21 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="bg-primary rounded-[14px] px-4 py-4 mt-4 drop-shadow-xl -translate-y-20 h-[65px]">
+        <div className="bg-primary rounded-[14px] px-4 py-4 mt-4 drop-shadow-xl -translate-y-20 h-[70px] flex justify-between">
           <div className="items-center">
             <h1 className="text-bgSecondary">Plastic-In Poin</h1>
             <h2 className="text-bgSecondary font-semibold text-[16px]">0</h2>
+          </div>
+          <div className="flex items-center gap-2 pt-6">
+            <button className="text-bgSecondary text-xs">Reedem Poin</button>
+            <Link href="/reedem">
+              <Image
+                src="/svg/button-reedem.svg"
+                alt="button reedem"
+                width={19}
+                height={19}
+              />
+            </Link>
           </div>
         </div>
       </div>
@@ -50,7 +61,7 @@ export default function Page() {
           <h1 className="text-lg font-bold text-text-primary">
             Lokasi Terdekat
           </h1>
-          <div className="flex gap-4 overflow-x-auto mt-3 scrollbar-hide ">
+          <div className="flex gap-4 overflow-x-auto mt-3 scrollbar-hide">
             {/* Kartu Lokasi */}
             <div className="w-56 flex-shrink-0 bg-white rounded-[14px] p-4">
               <Image
