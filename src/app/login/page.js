@@ -47,7 +47,7 @@ export default function Page() {
   };
 
   return (
-    <div className="bg-primary pt-[35px]">
+    <div className="bg-primary h-screen pt-[35px]">
       <div className="flex items-center justify-center">
         <Link href="/onboarding" className="absolute left-8 top-[44px]">
           <Image src="/svg/image-back.svg" alt="Back" width={14} height={25} />
@@ -62,7 +62,7 @@ export default function Page() {
         Silahkan masuk atau daftar jika belum mempunyai akun.
       </p>
 
-      <div className="bg-bgSecondary h-full rounded-t-[36px] pt-20 px-9">
+      <div className="bg-bgSecondary h-screen rounded-t-[36px] pt-20 px-9">
         <form onSubmit={handleSubmit}>
           <div>
             <label className="text-text-primary text-sm font-medium text-[15px]">

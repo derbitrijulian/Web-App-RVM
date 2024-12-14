@@ -42,7 +42,7 @@ export default function Page() {
           </div>
           <div className="flex items-center gap-2 pt-6">
             <button className="text-bgSecondary text-xs">Reedem Poin</button>
-            <Link href="/reedem">
+            <Link href="/reedem-voucher">
               <Image
                 src="/svg/button-reedem.svg"
                 alt="button reedem"
