@@ -12,7 +12,7 @@ export default function Navbar() {
   const isActive = (path) => pathname === path;
 
   return (
-    <div className="bg-white border rounded-t-3xl mx-2 fixed bottom-0 inset-x-0 shadow-navbar-shadow">
+    <div className="bg-white border rounded-t-3xl mx-2 fixed -bottom-1 inset-x-0 shadow-navbar-shadow">
       <ul className="flex gap-4 justify-center items-center p-2 h-[85px]">
         <li
           className={`flex flex-col items-center ${
