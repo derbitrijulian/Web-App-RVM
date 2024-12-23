@@ -38,7 +38,7 @@ export default function RedeemDecisionPage() {
       </p>
 
       {/* Content Section */}
-      <div className="bg-bgSecondary h-full rounded-t-[36px] pt-10 mt-10">
+      <div className="bg-bgSecondary h-full rounded-t-[36px] pt-10 mt-10 pb-20">
         {/* Bank */}
         <div className="grid gap-4 px-5 py-5">
           <h1 className="text-center text-2xl text-text-primary font-medium">

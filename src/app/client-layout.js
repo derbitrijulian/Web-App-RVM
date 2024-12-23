@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 
 export default function clientLayout({ children }) {
   const pathName = usePathname();
-  const NavbarPages = ['/home', '/profile'];
+  const NavbarPages = ['/home', '/profil', '/lokasi', '/aktifitas'];
 
   return (
     <section>

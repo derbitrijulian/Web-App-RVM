@@ -71,10 +71,10 @@ export default function Page() {
             <input
               type="email"
               name="email"
-              placeholder="Masukkan Nama Pengguna atau Email"
+              placeholder="Masukkan Email"
               value={formData.email}
               onChange={handleChange}
-              className="mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="text-text-primary mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
 
@@ -94,7 +94,7 @@ export default function Page() {
               placeholder="Masukkan Kata Sandi"
               value={formData.password}
               onChange={handleChange}
-              className="mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="text-text-primary mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
 

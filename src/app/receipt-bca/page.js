@@ -84,7 +84,7 @@ export default function RedeemGopayPage() {
           </div>
 
           {/* Activity Link */}
-          <Link href="/activity">
+          <Link href="/aktifitas">
             <div className="text-[#616161] text-[12px] cursor-pointer hover:underline pt-12 text-center">
               Lihat Aktivitas
             </div>
@@ -92,7 +92,7 @@ export default function RedeemGopayPage() {
         </div>
 
         {/* Home Button */}
-        <Link href="/" className="flex justify-center">
+        <Link href="/home" className="flex justify-center">
           <button className="mt-10 py-3 px-9 bg-primary rounded-xl text-white font-semibold text-xl">
             Beranda
           </button>
