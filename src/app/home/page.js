@@ -19,12 +19,14 @@ export default function Page() {
               <p className="font-regular text-white text-sm">Selamat Datang</p>
             </div>
           </div>
-          <Image
-            src="/svg/notification.svg"
-            alt="notification"
-            width={30}
-            height={30}
-          />
+          <Link href="/notifikasi">
+            <Image
+              src="/svg/notification.svg"
+              alt="notification"
+              width={30}
+              height={30}
+            />
+          </Link>
         </div>
 
         {/* Section Utama */}
@@ -55,7 +57,7 @@ export default function Page() {
       </div>
 
       {/* Kontainer Putih Full Width */}
-      <div className="bg-bgSecondary h-full rounded-t-[20px] -mt-16 p-7">
+      <div className="bg-bgSecondary h-full rounded-t-[20px] -mt-16 px-7 pt-10 pb-40">
         {/* Bagian Lokasi Terdekat */}
         <div className="mb-4">
           <h1 className="text-lg font-bold text-text-primary">

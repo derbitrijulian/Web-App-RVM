@@ -36,7 +36,7 @@ export default function Page() {
 
       {/* Content Section */}
       <div className="bg-bgSecondary h-screen rounded-t-[36px] pt-10 mt-10">
-        <div className="grid gap-6 px-5">
+        <div className="grid gap-6 px-5 pb-16">
           {/* Voucher Card */}
           <Link href="/reedem-decision">
             <div className="bg-primary flex items-center rounded-xl px-8 py-14 gap-7 text-white">

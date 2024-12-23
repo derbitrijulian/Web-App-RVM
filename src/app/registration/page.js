@@ -46,7 +46,6 @@ export default function Page() {
     }
 
     try {
-      // Firebase Authentication: Create User
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         formData.email,
@@ -54,7 +53,6 @@ export default function Page() {
       );
       const user = userCredential.user;
 
-      // Store user data in Firestore
       await setDoc(doc(db, 'users', user.uid), {
         fullName: formData.fullName,
         email: formData.email,
@@ -63,14 +61,12 @@ export default function Page() {
         isVerified: false,
       });
 
-      // Send email verification
       await sendEmailVerification(user);
       setSuccess(
         'Registration successful! A verification email has been sent.'
       );
       setVerificationSent(true);
 
-      // Reset form
       setFormData({
         fullName: '',
         email: '',
@@ -99,7 +95,6 @@ export default function Page() {
       </p>
       <form onSubmit={handleSubmit}>
         <div className="bg-bgSecondary h-full rounded-t-[36px] pt-20 px-9">
-          {/* Full Name Field */}
           <div>
             <label
               className="text-text-primary text-sm font-medium"
@@ -115,10 +110,9 @@ export default function Page() {
               placeholder="Masukkan Nama Pengguna"
               value={formData.fullName}
               onChange={handleChange}
-              className="mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="text-text-primary mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          {/* Email Field */}
           <div className="mt-3">
             <label className="text-text-primary text-sm font-medium">
               Email
@@ -130,10 +124,9 @@ export default function Page() {
               placeholder="Masukkan Email"
               value={formData.email}
               onChange={handleChange}
-              className="mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="text-text-primary mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          {/* Password Field */}
           <div className="mt-3">
             <label className="text-text-primary text-sm font-medium">
               Kata Sandi
@@ -145,10 +138,9 @@ export default function Page() {
               placeholder="Masukkan Kata Sandi"
               value={formData.password}
               onChange={handleChange}
-              className="mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="text-text-primary mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          {/* Confirm Password Field */}
           <div className="mt-3">
             <label className="text-text-primary text-sm font-medium">
               Konfirmasi Kata Sandi
@@ -160,10 +152,9 @@ export default function Page() {
               placeholder="Konfirmasi Kata Sandi"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="text-text-primary mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          {/* Phone Field */}
           <div className="mt-3">
             <label className="text-text-primary text-sm font-medium">
               Nomor Hp
@@ -178,21 +169,36 @@ export default function Page() {
               className="mt-2 pl-3 pr-3 w-full p-3 border-[3px] border-secondary rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          {/* Checkbox */}
+
+          <p className="text-xs pt-2">*Tanda Kolom Wajib Diisi</p>
           <div className="flex items-start gap-5 px-6 mt-3">
             <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
                 checked={checked}
                 onChange={() => setChecked(!checked)}
-                className="peer h-5 w-5 cursor-pointer rounded border border-gray-300 checked:bg-primary"
+                className="peer h- w-5 cursor-pointer rounded border border-gray-300 checked:bg-primary"
               />
-              <span className="ml-2 text-xs">
-                Saya menyetujui Syarat dan Ketentuan
-              </span>
+              <div className="grid justify-start mx-2">
+                <span className="text-xs">
+                  Setuju dengan <br />
+                  <Link
+                    href="/syarat-ketentuan?callback=/registration"
+                    className="text-primary hover:underline"
+                  >
+                    Syarat dan Ketentuan
+                  </Link>
+                  <span className="spacer">serta</span>
+                  <Link
+                    href="/kebijakan-privasi?callback=/registration"
+                    className="text-primary hover:underline"
+                  >
+                    Kebijakan Privasi
+                  </Link>
+                </span>
+              </div>
             </label>
           </div>
-          {/* Submit Button */}
           <div className="grid justify-center gap-3 pt-8 pb-3">
             <button
               type="submit"

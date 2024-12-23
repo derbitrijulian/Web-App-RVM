@@ -1,11 +1,18 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 export default function Page() {
+  // const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callback') || '/profil';
+
   return (
     <div className="bg-primary h-screen pt-[35px] ">
       <div className="flex items-center justify-center">
-        <Link href="/registration" className="absolute left-6 top-[44px]">
+        <Link href={callbackUrl} className="absolute left-6 top-[44px]">
           <Image src="/svg/image-back.svg" alt="Back" width={14} height={25} />
         </Link>
 

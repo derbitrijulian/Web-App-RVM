@@ -1,3 +1,24 @@
-export default function lokasi() {
-  return <h1>kontol</h1>;
+import Image from 'next/image';
+
+export default function Lokasi() {
+  return (
+    <div className="px-5 mt-5">
+      <div className="flex items-center h-12 bg-white rounded-xl shadow-md px-3">
+        {/* Ikon Lokasi */}
+        <Image
+          src="/svg/icon-lokasi.svg"
+          alt="icon lokasi"
+          width={20}
+          height={20}
+        />
+
+        {/* Input Lokasi */}
+        <input
+          type="text"
+          placeholder="Masukkan lokasi"
+          className="w-full ml-2 text-gray-700 placeholder-gray-400 focus:outline-none"
+        />
+      </div>
+    </div>
+  );
 }
