@@ -1,6 +1,6 @@
 import './globals.css';
 import { Poppins } from 'next/font/google';
-import Navbar from '@/components/ui/navbar';
+import Navbar from '@/app/components/ui/navbar';
 import ClientLayout from './client-layout';
 
 const poppins = Poppins({
@@ -17,9 +17,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${poppins.className} flex flex-col min-h-full`}>
+      <body className={`${poppins.className} `}>
+        
         <ClientLayout>
-          <main className="flex-grow">{children}</main>
+          <main>{children}</main>
         </ClientLayout>
       </body>
     </html>

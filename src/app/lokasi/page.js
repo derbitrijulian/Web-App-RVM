@@ -1,8 +1,13 @@
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+const Map = dynamic(() => import('../components/containers/maps/page'), {
+  ssr: false,
+});
 
 export default function Lokasi() {
   return (
     <div className="px-5 mt-5">
+        <Map />
       <div className="flex items-center h-12 bg-white rounded-xl shadow-md px-3">
         {/* Ikon Lokasi */}
         <Image
