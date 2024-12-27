@@ -1,9 +1,10 @@
 'use client';
 import L from 'leaflet';
 import { getRvmLocations } from '@/services/location-service';
-import Image from 'next/image';
+
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 export default function Page() {
   const [location, setLocation] = useState([]);
@@ -83,7 +84,7 @@ export default function Page() {
           </div>
           <Link href="/notifikasi">
             <Image
-              src="/svg/notification.svg"
+              src="/svg/Notification.svg"
               alt="notification"
               width={30}
               height={30}
@@ -137,7 +138,6 @@ export default function Page() {
                     )
                   : null;
 
-                // Filter out the locations that are more than 7km away
                 if (distance && distance <= 7000) {
                   return (
                     <div

@@ -39,3 +39,25 @@ export const registerUser = async (formData) => {
     throw new Error(error.message || 'Terjadi kesalahan tidak diketahui');
   }
 };
+
+export async function logout() {
+  try {
+    const response = await fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to logout');
+    }
+
+    return { success: true, message: 'Logout successful' };
+  } catch (error) {
+    console.error('Logout service error:', error.message);
+
+    return { success: false, message: error.message };
+  }
+}

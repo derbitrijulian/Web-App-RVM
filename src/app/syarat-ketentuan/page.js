@@ -12,7 +12,6 @@ export default function Page() {
     <div className="bg-primary h-screen pt-[35px] ">
       <div className="flex items-center justify-center">
         <Link href={callbackUrl} className="absolute left-6 top-[44px]">
-        <Link href={callbackUrl} className="absolute left-6 top-[44px]">
           <Image src="/svg/image-back.svg" alt="Back" width={14} height={25} />
         </Link>
 

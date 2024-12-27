@@ -1,48 +1,140 @@
-"use client"
-import { Html5QrcodeScanner } from "html5-qrcode";
-import React, { useEffect, useState } from "react";
+'use client';
+import { Html5Qrcode } from 'html5-qrcode';
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [scanResult, setScanResult] = useState(null);
+  const [scanner, setScanner] = useState(null);
+  const [cameras, setCameras] = useState([]);
+  const [currentCameraIndex, setCurrentCameraIndex] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
-    const scanner = new Html5QrcodeScanner("reader", {
-      fps: 10,
-      qrbox: { width: 250, height: 250 },
-    }, false); // Adding the 'verbose' parameter with a value of false
+    const initializeScanner = async () => {
+      const qrReaderId = 'reader';
 
-    scanner.render(
-      (decodedText, decodedResult) => {
-        // Handle the scanned code
-        console.log("Decoded Text: ", decodedText);
-        setScanResult(decodedText);
-        scanner.clear(); // Stop scanning after the first result
-      },
-      (errorMessage) => {
-        // Handle scan errors or unsuccessful attempts
-        console.warn("Scan error: ", errorMessage);
+      if (!document.getElementById(qrReaderId)) {
+        console.warn(`Element with ID '${qrReaderId}' is not available.`);
+        return;
       }
-    );
+
+      const qrScanner = new Html5Qrcode(qrReaderId);
+      setScanner(qrScanner);
+
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(
+          (device) => device.kind === 'videoinput'
+        );
+        setCameras(videoDevices);
+
+        if (videoDevices.length > 0) {
+          startScanning(qrScanner, videoDevices[0].deviceId);
+        } else {
+          console.warn('No cameras found.');
+        }
+      } catch (error) {
+        console.error('Error initializing cameras:', error);
+      }
+    };
+
+    initializeScanner();
 
     return () => {
-      scanner.clear();
+      if (scanner) {
+        scanner
+          .stop()
+          .catch((err) => console.warn('Error stopping scanner:', err));
+        scanner.clear();
+      }
     };
   }, []);
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 relative">
-      <h1 className="text-2xl font-bold mb-4 text-black">QR Code Scanner</h1>
+  const startScanning = async (qrScanner, deviceId) => {
+    try {
+      await qrScanner.start(
+        { deviceId: { exact: deviceId } },
+        {
+          fps: 5,
+          qrbox: { width: 300, height: 250 },
+        },
+        (decodedText) => {
+          console.log('Decoded Text:', decodedText);
+          setScanResult(decodedText);
+          qrScanner
+            .stop()
+            .catch((err) => console.warn('Error stopping scanner:', err));
 
+          if (isValidUrl(decodedText)) {
+            router.replace(decodedText);
+          } else {
+            alert('Hasil scan bukan URL valid: ' + decodedText);
+          }
+        },
+        (errorMessage) => {
+          console.warn('Scan error:', errorMessage);
+        }
+      );
+    } catch (err) {
+      console.error('Error starting scanner:', err);
+    }
+  };
+
+  const toggleCamera = async () => {
+    if (scanner && cameras.length > 1) {
+      const nextIndex = (currentCameraIndex + 1) % cameras.length;
+      setCurrentCameraIndex(nextIndex);
+      await scanner
+        .stop()
+        .catch((err) => console.warn('Error stopping scanner:', err));
+      startScanning(scanner, cameras[nextIndex].deviceId);
+    } else {
+      console.warn('Cannot toggle camera. Only one camera available.');
+    }
+  };
+
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  return (
+    <div className="flex flex-col relative items-center justify-center min-h-screen bg-gray-100">
       <div id="reader" className="w-full max-w-md bg-gray-300 rounded-md"></div>
 
       {scanResult && (
-        <div className="mt-4 p-4 bg-green-100 border border-green-500 rounded">
-          <p className="text-green-800 font-medium">Scanned Result:</p>
+        <div className="mt-4 p-4 bg-primary border border-green-500 rounded">
+          <p className="text-green-800 font-medium">Hasil Scan:</p>
           <p className="text-sm text-gray-800 break-words">{scanResult}</p>
         </div>
       )}
 
-      <div className="w-full h-14 text-white bg-black absolute bottom-0 " >sdfghjk</div>
+      <div className="rounded-2xl bg-white w-[336px] h-[67px] bottom-0 absolute">
+        <div className="flex justify-center gap-[210px] py-4 px-7">
+          <div onClick={toggleCamera} className="cursor-pointer">
+            <Image
+              src="/svg/switch-camera.svg"
+              alt="Switch Camera"
+              width={35}
+              height={35}
+            />
+          </div>
+          <div>
+            <Image
+              src="/svg/panduan.svg"
+              alt="Panduan"
+              width={35}
+              height={35}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

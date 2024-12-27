@@ -1,11 +1,42 @@
 'use client';
 import OptionItem from '@/components/containers/option-items';
+import { logout } from '@/services/auth-service';
+import { fetchUser } from '@/services/user-service';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
+  const router = useRouter();
+  const [userDetail, setUserDetail] = useState(null);
+  const [error, setError] = useState(null);
+
+  const handleLogout = async () => {
+    const result = await logout();
+    if (result.success) {
+      alert('Logout successful!');
+      router.push('/login');
+    } else {
+      alert(`Logout failed: ${result.message}`);
+    }
+  };
+
+  useEffect(() => {
+    const fetchUserActiveDetail = async () => {
+      try {
+        const data = await fetchUser();
+        console.log('Fetched Data: ', data.user.customClaims.fullName);
+
+        setUserDetail(data.user.customClaims.fullName);
+      } catch (error) {}
+    };
+
+    fetchUserActiveDetail();
+  }, []);
+
   return (
-    <div className="bg-primary h-screen pt-[35px]">
+    <div className="bg-primary h-full pt-[35px]">
       {/* Header */}
       <div className="justify-center">
         <h1 className="text-bgSecondary font-semibold w-full text-center text-[24px] pb-6 pt-1">
@@ -39,11 +70,11 @@ export default function ProfilePage() {
 
           {/* Username */}
           <h1 className="text-text-primary font-semibold text-2xl mt-[60px] mb-6">
-            @Comefeelme
+            {userDetail}
           </h1>
 
           {/* Options */}
-          <div className="grid gap-y-7 text-center w-full mt-20">
+          <div className="grid gap-y-7 text-center w-full mt-10">
             <OptionItem
               icon="/svg/icon-password.svg"
               text="Ubah Kata Sandi"
@@ -65,9 +96,10 @@ export default function ProfilePage() {
               href="/kebijakan-privasi"
             />
           </div>
-          <div className="grid justify-center pt-36 pb-6">
+          <div className="grid justify-center pt-10 pb-36">
             <button
               type="submit"
+              onClick={handleLogout}
               className="py-3 bg-primary rounded-xl w-52 text-bgSecondary font-semibold text-xl"
             >
               Log Out

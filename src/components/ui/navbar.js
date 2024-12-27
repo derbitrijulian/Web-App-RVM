@@ -1,16 +1,30 @@
 'use client';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { IoHomeOutline } from 'react-icons/io5';
 import { CiLocationOn, CiUser } from 'react-icons/ci';
 import { FiActivity } from 'react-icons/fi';
 import { BiNavigation } from 'react-icons/bi';
 import Link from 'next/link';
+import { useLocation } from '@/context/location';
+import Image from 'next/image';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { selectedLocation } = useLocation();
 
   const isActive = (path) => pathname === path;
+
+  const openGoogleMaps = () => {
+    if (selectedLocation) {
+      const { lat, lng } = selectedLocation;
+      window.open(
+        `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+        '_blank'
+      );
+    } else {
+      console.error('No Location Selected');
+    }
+  };
 
   return (
     <div className="bg-white border rounded-t-3xl mx-2 fixed -bottom-1 inset-x-0 shadow-navbar-shadow">
@@ -24,7 +38,7 @@ export default function Navbar() {
             <div>
               <IoHomeOutline className="w-6 h-6" />
             </div>
-            <span className={`text-xs font-medium`}>Beranda</span>
+            <span className="text-xs font-medium">Beranda</span>
           </li>
         </Link>
 
@@ -34,36 +48,53 @@ export default function Navbar() {
               isActive('/lokasi') ? 'text-primary' : 'text-black'
             }`}
           >
-            <div className="pb-1">
+            <div className="flex justify-center">
               <CiLocationOn className="w-6 h-6" />
             </div>
             <span className="text-xs font-medium">Lokasi</span>
           </li>
         </Link>
 
-        <Link href={isActive('/lokasi') ? '/navigasi' : '/qr'}>
-          <li className="flex flex-col items-center transform">
-            <div
-              className={`rounded-full p-6 ${
-                isActive('/lokasi') ? 'bg-primary' : 'bg-primary'
-              } -translate-y-11`}
-            >
-              {isActive('/lokasi') ? (
-                <BiNavigation className="w-11 h-11 text-white" />
+        {pathname === '/lokasi' ? (
+          <li
+            onClick={selectedLocation ? openGoogleMaps : null}
+            className={`flex flex-col items-center cursor-pointer transform ${
+              selectedLocation ? 'text-black' : 'opacity-50 cursor-not-allowed'
+            }`}
+          >
+            <div className="relative flex justify-center -translate-y-10">
+              {selectedLocation ? (
+                <>
+                  <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></div>
+                  <div className=" relative inline-flex rounded-full w-20 h-20 bg-sky-500   items-center justify-center ">
+                    <BiNavigation className="text-white w-10 h-10 text-center  " />
+                  </div>
+                </>
               ) : (
+                <div className='grid items-center'>
+                  <div className=" relative inline-flex rounded-full w-20 h-20 bg-primary  items-center justify-center ">
+                    <BiNavigation className="text-white w-10 h-10 text-center  " />
+                  </div>
+                  <p>navigasi</p>
+                </div>
+              )}
+            </div>
+          </li>
+        ) : (
+          <Link href="/qr">
+            <li className="flex flex-col items-center -translate-y-9 ">
+              <div className="rounded-full p-6 bg-primary mb-2 ">
                 <Image
                   src="/svg/icon-scan.svg"
                   alt="icon scan"
                   width={42}
                   height={42}
                 />
-              )}
-            </div>
-            <span className="-translate-y-9 text-xs font-medium text-black">
-              {isActive('/lokasi') ? 'Navigasi' : 'Scan'}
-            </span>
-          </li>
-        </Link>
+              </div>
+              <span className="text-xs font-medium text-black">QR Scanner</span>
+            </li>
+          </Link>
+        )}
 
         <Link href="/aktifitas">
           <li
@@ -74,7 +105,7 @@ export default function Navbar() {
             <div className="pb-1">
               <FiActivity className="w-6 h-6" />
             </div>
-            <span className={`text-xs font-medium`}>Aktifitas</span>
+            <span className="text-xs font-medium">Aktifitas</span>
           </li>
         </Link>
 
@@ -87,13 +118,7 @@ export default function Navbar() {
             <div>
               <CiUser className="w-6 h-6" />
             </div>
-            <span
-              className={`text-xs font-medium ${
-                isActive('/profil') ? 'text-primary' : 'text-black'
-              }`}
-            >
-              Profil
-            </span>
+            <span className="text-xs font-medium">Profil</span>
           </li>
         </Link>
       </ul>

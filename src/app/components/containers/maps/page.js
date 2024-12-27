@@ -7,6 +7,7 @@ import 'leaflet-routing-machine';
 import { getRvmLocations } from '@/services/location-service';
 import { getLocationName } from '../../../../utils/location';
 import Image from 'next/image';
+import { useLocation } from '@/context/location';
 
 const MapContainer = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
@@ -25,6 +26,7 @@ const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), {
 });
 
 export default function Map() {
+  const { setSelectedLocation } = useLocation();
   const [icon, setIcon] = useState(null);
   const [currentLocationIcon, setCurrentLocationIcon] = useState(null);
   const [mounted, setMounted] = useState(false);
@@ -35,12 +37,78 @@ export default function Map() {
   const [searchQuery, setSearchQuery] = useState('');
   const mapRef = useRef(null);
   const routeRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [locationError, setLocationError] = useState(null);
+
+  const getCurrentPosition = () => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error('Geolocation is not supported by your browser'));
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => resolve(position),
+        (error) => reject(error),
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    });
+  };
+
+  const initializeMap = async () => {
+    try {
+      setIsLoading(true);
+      const position = await getCurrentPosition();
+      const { latitude, longitude } = position.coords;
+      
+      setCurrentLocation([latitude, longitude]);
+      
+      if (mapRef.current) {
+        mapRef.current.setView([latitude, longitude], 14);
+      }
+      
+      const name = await getLocationName(latitude, longitude);
+      setLocationName(name);
+      
+      // Start watching position after getting initial location
+      const watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCurrentLocation([latitude, longitude]);
+          getLocationName(latitude, longitude).then(setLocationName);
+        },
+        (error) => {
+          console.error('Error watching position:', error);
+          setLocationError(error.message);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        }
+      );
+
+      return () => navigator.geolocation.clearWatch(watchId);
+    } catch (error) {
+      console.error('Error getting initial position:', error);
+      setLocationError(error.message);
+      // Set default location if geolocation fails (e.g., Jakarta)
+      setCurrentLocation([-6.2088, 106.8456]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setMounted(true);
 
-      const initializeLeaflet = async () => {
+      const initialize = async () => {
+        // Initialize icons
         const defaultIcon = L.icon({
           iconUrl: 'https://cdn-icons-png.flaticon.com/512/854/854878.png',
           iconSize: [32, 32],
@@ -56,31 +124,14 @@ export default function Map() {
         setIcon(defaultIcon);
         setCurrentLocationIcon(currentLocationCustomIcon);
 
-        if ('geolocation' in navigator) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              const { latitude, longitude } = position.coords;
-              setCurrentLocation([latitude, longitude]);
-              getLocationName(latitude, longitude).then((name) =>
-                setLocationName(name)
-              );
-            },
-            (error) => {
-              console.error('Error getting location:', error.message);
-            }
-          );
-        } else {
-          console.error('Geolocation not supported by this browser');
-        }
-
+        // Initialize map and get locations
+        await initializeMap();
+        
+        // Get RVM locations
         const updatedRvmLocations = await getRvmLocations();
-
         const updatedMarkers = await Promise.all(
           updatedRvmLocations.map(async (marker) => {
-            const position = [
-              marker.position.latitude,
-              marker.position.longitude,
-            ];
+            const position = [marker.position.latitude, marker.position.longitude];
             const locationName = await getLocationName(
               marker.position.latitude,
               marker.position.longitude
@@ -91,35 +142,42 @@ export default function Map() {
         setRvmLocations(updatedMarkers);
       };
 
-      initializeLeaflet();
+      initialize();
     }
   }, []);
 
   const handleMarkerClick = (rvm) => {
-    if (currentLocation) {
-      const currentLatLng = L.latLng(currentLocation);
-      const rvmLatLng = L.latLng(rvm.position[0], rvm.position[1]);
+    if (!currentLocation) {
+      setLocationError('Please enable location services to see distance and routing');
+      return;
+    }
 
-      const calculatedDistance = currentLatLng.distanceTo(rvmLatLng);
-      setDistance(calculatedDistance);
+    setSelectedLocation({
+      lat: rvm.position[0],
+      lng: rvm.position[1],
+      name: rvm.name,
+    });
 
-      if (mapRef.current) {
-        if (routeRef.current) {
-          mapRef.current.removeControl(routeRef.current);
-        }
+    const currentLatLng = L.latLng(currentLocation);
+    const rvmLatLng = L.latLng(rvm.position[0], rvm.position[1]);
 
-        const route = L.Routing.control({
-          waypoints: [currentLatLng, rvmLatLng],
-          routeWhileDragging: true,
-          lineOptions: { styles: [{ color: 'blue', weight: 4 }] },
-          show: false,
-          addWaypoints: false,
-        }).addTo(mapRef.current);
+    const calculatedDistance = currentLatLng.distanceTo(rvmLatLng);
+    setDistance(calculatedDistance);
 
-        routeRef.current = route;
+    if (mapRef.current) {
+      if (routeRef.current) {
+        mapRef.current.removeControl(routeRef.current);
       }
-    } else {
-      console.error('Current location is not set yet!');
+
+      const route = L.Routing.control({
+        waypoints: [currentLatLng, rvmLatLng],
+        routeWhileDragging: true,
+        lineOptions: { styles: [{ color: 'blue', weight: 4 }] },
+        show: false,
+        addWaypoints: false,
+      }).addTo(mapRef.current);
+
+      routeRef.current = route;
     }
   };
 
@@ -133,109 +191,86 @@ export default function Map() {
   if (!mounted) return null;
 
   return (
-    <div className="flex flex-col h-screen w-full">
-      <header className="bg-blue-500 text-white p-4">
-        <h1 className="text-xl font-bold">RVM Finder</h1>
-      </header>
-      <div className="flex flex-1">
-        <aside className="w-1/4 bg-gray-100 p-4 overflow-y-auto">
-          <input
-            type="text"
-            placeholder="Search RVM..."
-            className="w-full p-2 mb-4 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          />
-          <ul>
-            {rvmLocations.map((rvm) => (
-              <li
-                key={rvm.id}
-                className="p-2 mb-2 bg-white shadow rounded cursor-pointer hover:bg-gray-200"
-                onClick={() => handleMarkerClick(rvm)}
-              >
-                {rvm.name}
-              </li>
-            ))}
-          </ul>
-        </aside>
-        <main className="flex-1">
-          <MapContainer
-            center={currentLocation || [-6.2088, 106.8456]}
-            zoom={12}
-            className="h-full w-full"
-            whenCreated={(map) => {
-              mapRef.current = map;
-            }}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution="&copy; OpenStreetMap contributors"
-            />
-            {currentLocation && (
-              <Marker position={currentLocation} icon={currentLocationIcon}>
-                <Popup>
-                  Your Current Location: {locationName || 'Loading...'}
-                </Popup>
-              </Marker>
-            )}
-            {icon &&
-              rvmLocations.map((rvm) => (
-                <Marker
-                  key={rvm.id}
-                  position={rvm.position}
-                  icon={icon}
-                  eventHandlers={{
-                    click: () => handleMarkerClick(rvm),
-                  }}
-                >
-                  <Popup>
-                    <h3 className="font-bold">{rvm.name}</h3>
-                    <p>Location: {rvm.locationName}</p>
-                    <p>
-                      Capacity: {rvm.capacity}% ({rvm.capacityStatus})
-                    </p>
-                    {rvm.image && (
-                      <Image
-                        src={rvm.image}
-                        alt={rvm.name}
-                        className="w-full h-auto my-2"
-                      />
-                    )}
-                    {distance !== null && (
-                      <p>
-                        Distance:{' '}
-                        {distance >= 1000
-                          ? `${(distance / 1000).toFixed(2)} km`
-                          : `${distance.toFixed(2)} m`}
-                      </p>
-                    )}
-                    <a
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${rvm.position[0]},${rvm.position[1]}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-2 inline-block bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                    >
-                      Open in Google Maps
-                    </a>
-                  </Popup>
-                </Marker>
-              ))}
-          </MapContainer>
-          <button
-            onClick={() => {
-              if (!mapRef.current || !currentLocation) {
-                console.error('Map or current location is not ready yet!');
-                return;
-              }
-              mapRef.current.setView(currentLocation, 14);
-            }}
-            className="fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600"
-          >
-            My Location
-          </button>
-        </main>
-      </div>
+    <div className="flex flex-col h-screen w-full relative">
+      {isLoading && (
+        <div className="absolute top-0 left-0 right-0 z-50 bg-blue-500 text-white p-2 text-center">
+          Loading your location...
+        </div>
+      )}
+      {locationError && (
+        <div className="absolute top-0 left-0 right-0 z-50 bg-red-500 text-white p-2 text-center">
+          {locationError}
+        </div>
+      )}
+      <MapContainer
+        center={currentLocation || [-6.2088, 106.8456]}
+        zoom={14}
+        className="h-full w-full"
+        whenCreated={(map) => {
+          mapRef.current = map;
+          map.zoomControl.setPosition('bottomright');
+        }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; OpenStreetMap contributors"
+        />
+        {currentLocation && (
+          <Marker position={currentLocation} icon={currentLocationIcon}>
+            <Popup>
+              <div className="font-bold">Your Current Location</div>
+              <div>{locationName || 'Loading...'}</div>
+            </Popup>
+          </Marker>
+        )}
+        {icon &&
+          rvmLocations.map((rvm) => (
+            <Marker
+              key={rvm.id}
+              position={rvm.position}
+              icon={icon}
+              eventHandlers={{
+                click: () => handleMarkerClick(rvm),
+              }}
+            >
+              <Popup>
+                <h3 className="font-bold">{rvm.name}</h3>
+                <p>Location: {rvm.locationName}</p>
+                <p>
+                  Capacity: {rvm.capacity}% ({rvm.capacityStatus})
+                </p>
+                {rvm.image && (
+                  <Image
+                    src={rvm.image}
+                    alt={rvm.name}
+                    className="w-full h-auto my-2"
+                  />
+                )}
+                {distance !== null && (
+                  <p>
+                    Distance:{' '}
+                    {distance >= 1000
+                      ? `${(distance / 1000).toFixed(2)} km`
+                      : `${distance.toFixed(2)} m`}
+                  </p>
+                )}
+              </Popup>
+            </Marker>
+          ))}
+      </MapContainer>
+    
+      <button
+        onClick={() => {
+          if (!mapRef.current || !currentLocation) {
+            setLocationError('Unable to find your location');
+            return;
+          }
+          mapRef.current.setView(currentLocation, 14);
+        }}
+        className="fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 z-50"
+      >
+        My Location
+      </button>
     </div>
   );
-}
+} 

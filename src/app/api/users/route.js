@@ -1,8 +1,5 @@
-// app/api/users/[id]/route.js
 
-import { db } from '@/app/firebase';
 import { adminAuth } from '@/utils/admin-firebase';
-import { doc, getDoc } from 'firebase/firestore';
 
 export async function GET(req) {
   try {
