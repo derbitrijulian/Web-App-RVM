@@ -1,14 +1,8 @@
 'use client';
-
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-} from 'firebase/auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { auth, db } from '../firebase'; // Pastikan konfigurasi Firebase benar
-import { doc, setDoc } from 'firebase/firestore';
+import { registerUser } from '@/services/auth-service';
 
 export default function Page() {
   const [formData, setFormData] = useState({
@@ -22,7 +16,6 @@ export default function Page() {
   const [checked, setChecked] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [verificationSent, setVerificationSent] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,26 +39,12 @@ export default function Page() {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
-      const user = userCredential.user;
+      setError('');
+      setSuccess('');
 
-      await setDoc(doc(db, 'users', user.uid), {
-        fullName: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        createdAt: new Date(),
-        isVerified: false,
-      });
-
-      await sendEmailVerification(user);
-      setSuccess(
-        'Registration successful! A verification email has been sent.'
-      );
-      setVerificationSent(true);
+      const response = await registerUser(formData);
+      console.log(response);
+      setSuccess(response.message || 'Registrasi Berhasil!!');
 
       setFormData({
         fullName: '',
@@ -179,24 +158,9 @@ export default function Page() {
                 onChange={() => setChecked(!checked)}
                 className="peer h- w-5 cursor-pointer rounded border border-gray-300 checked:bg-primary"
               />
-              <div className="grid justify-start mx-2">
-                <span className="text-xs">
-                  Setuju dengan <br />
-                  <Link
-                    href="/syarat-ketentuan?callback=/registration"
-                    className="text-primary hover:underline"
-                  >
-                    Syarat dan Ketentuan
-                  </Link>
-                  <span className="spacer">serta</span>
-                  <Link
-                    href="/kebijakan-privasi?callback=/registration"
-                    className="text-primary hover:underline"
-                  >
-                    Kebijakan Privasi
-                  </Link>
-                </span>
-              </div>
+              <span className="ml-2 text-xs">
+                Saya menyetujui <Link href="/syarat-ketentuan?callback=/registration">Syarat dan Ketentuan</Link>
+              </span>
             </label>
           </div>
           <div className="grid justify-center gap-3 pt-8 pb-3">
@@ -211,6 +175,7 @@ export default function Page() {
           {success && <p className="text-green-500 text-sm">{success}</p>}
         </div>
       </form>
+
     </div>
   );
 }

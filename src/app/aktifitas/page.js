@@ -22,7 +22,7 @@ export default function ProfilePage() {
             <div className="grid gap-0 justify-center text-center shadow-lg rounded-2xl bg-primary w-[160px] h-16 p-1">
               <div className="flex justify-beetween">
                 <Image
-                  src="/svg/income.svg"
+                  src="/svg/Income.svg"
                   alt="income"
                   width={12}
                   height={12}
@@ -36,7 +36,7 @@ export default function ProfilePage() {
             <div className="grid gap-0 justify-center text-center shadow-lg rounded-2xl bg-white w-[160px] h-16 p-1">
               <div className="flex justify-beetween">
                 <Image
-                  src="/svg/expense.svg"
+                  src="/svg/Expense.svg"
                   alt="expense"
                   width={12}
                   height={12}

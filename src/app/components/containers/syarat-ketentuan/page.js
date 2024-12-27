@@ -1,20 +1,15 @@
-'use client';
-'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import {  useSearchParams } from 'next/navigation';
 
-export default function Page() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callback') || '/';
-
+export default function SyaratKetentuan({href}) {
   return (
     <div className="bg-primary h-screen pt-[35px] ">
       <div className="flex items-center justify-center">
-        <Link href={callbackUrl} className="absolute left-6 top-[44px]">
+        {/* ini back  */}
+        <Link href={href} className="absolute left-6 top-[44px]">
           <Image src="/svg/image-back.svg" alt="Back" width={14} height={25} />
         </Link>
-
+        
         <h1 className="text-bgSecondary font-semibold w-full text-center text-[20px] pb-6 pt-1">
           Syarat dan Ketentuan
         </h1>

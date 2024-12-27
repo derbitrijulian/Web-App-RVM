@@ -1,11 +1,10 @@
 'use client';
 import { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
 import Image from 'next/image';
 import Link from 'next/link';
 import { setCookie } from 'nookies';
 import { useRouter } from 'next/navigation';
+import { loginUser } from '@/services/auth-service';
 
 export default function Page() {
   const [formData, setFormData] = useState({
@@ -26,20 +25,17 @@ export default function Page() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
-      const token = await userCredential.user.getIdToken();
 
-      setCookie(null, 'accessToken', token, {
-        maxAge: 30 * 24 * 60 * 60, // 30 days
-        path: '/',
-      });
-      // Redirect to the home page or dashboard
-      // window.location.href = "/home";
+    const { email, password } = formData;
+
+    if (!email || !password) {
+      setError('Email dan kata sandi wajib diisi!');
+      return;
+    }
+
+    try {
+      await loginUser(email, password);
+
       router.push('/home');
     } catch (error) {
       setError('Email atau kata sandi salah!');
