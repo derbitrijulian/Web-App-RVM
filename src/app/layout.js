@@ -1,6 +1,5 @@
 import './globals.css';
 import { Poppins } from 'next/font/google';
-import Navbar from '@/app/components/ui/navbar';
 import ClientLayout from './client-layout';
 import { LocationProvider } from '@/context/location';
 

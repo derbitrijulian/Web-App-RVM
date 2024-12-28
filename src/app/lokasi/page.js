@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 
-const Map = dynamic(() => import('../components/containers/maps/page'), {
+const Map = dynamic(() => import('../../components/containers/maps/page'), {
   ssr: false,
 });
 

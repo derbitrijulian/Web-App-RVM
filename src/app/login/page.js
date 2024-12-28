@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { setCookie } from 'nookies';
 import { useRouter } from 'next/navigation';
 import { loginUser } from '@/services/auth-service';
 

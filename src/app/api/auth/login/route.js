@@ -1,11 +1,11 @@
 import { auth } from '@/app/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { NextResponse } from 'next/server';
 
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
 
-    // Validasi input
     if (
       !email ||
       !password ||
@@ -13,35 +13,32 @@ export async function POST(req) {
       typeof password !== 'string'
     ) {
       return new Response(
-        JSON.stringify({ message: 'Invalid email or password' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ message: 'Email dan Password harus diisi' }),
+        { status: 400 }
       );
     }
 
-    // Login Firebase
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
       password
     );
-    const idToken = await userCredential.user.getIdToken();
+    const user = userCredential.user;
+    const token = await user.getIdToken();
 
-    // Set cookie
-    const isProduction = process.env.NODE_ENV === 'production';
-    const cookie = `firebase_token=${idToken}; HttpOnly; ${
-      isProduction ? 'Secure;' : ''
-    } SameSite=Strict; Max-Age=${30 * 24 * 60 * 60}; Path=/`;
-
-    return new Response(
-      JSON.stringify({ message: 'Login successful', token: idToken }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Set-Cookie': cookie,
-        },
-      }
+    const response = new NextResponse(
+      JSON.stringify({ message: 'Login berhasil' }),
+      { status: 200 }
     );
+
+    response.cookies.set('firebase_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60,
+      path: '/',
+    });
+    return response;
   } catch (error) {
     console.error('Login error:', error.message);
 
