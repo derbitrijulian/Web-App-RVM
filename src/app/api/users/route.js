@@ -1,34 +1,39 @@
-
 import { adminAuth } from '@/utils/admin-firebase';
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
-export async function GET(req) {
+
+
+export async function GET() {
   try {
-    const authorization = req.headers.get('Authorization');
-    if (!authorization || !authorization.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-        status: 401,
-      });
+    const cookieStore = cookies();
+    const token = cookieStore.get('firebase_token');
+
+    if (!token) {
+      return new NextResponse(
+        JSON.stringify({ message: 'Unauthirized: Tidak ada token' })
+      );
     }
 
-    const idToken = authorization.split('Bearer ')[1];
-    const decodeToken = await adminAuth.verifyIdToken(idToken);
+    const decodeToken = await adminAuth.verifyIdToken(token.value);
     const uid = decodeToken.uid;
-    const user = await adminAuth.getUser(uid);
+    const userRecord = await adminAuth.getUser(uid);
 
-    return new Response(JSON.stringify({ user }), {
+    const userDetails = {
+      uid: userRecord.uid,
+      email: userRecord.email,
+      emailVerified: userRecord.emailVerified,
+      fullName: userRecord.customClaims?.fullName || null,
+      phone: userRecord.customClaims?.phone || null,
+    };
+
+    return new NextResponse(JSON.stringify(userDetails), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    return new Response(
-      JSON.stringify({
-        message: 'Failed to fetch user details',
-        error: error.message,
-      }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return new NextResponse(JSON.stringify({ message: error.message }), {
+      status: 500,
+    });
   }
 }

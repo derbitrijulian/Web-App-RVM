@@ -23,17 +23,38 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    const fetchUserActiveDetail = async () => {
+    async function fetchUserProfile() {
       try {
-        const data = await fetchUser();
-        console.log('Fetched Data: ', data.user.customClaims.fullName);
+        const response = await fetch('/api/users');
+        const data = await response.json();
+        console.log(data)
+        if (response.ok) {
+          setUserDetail(data);
+        } else {
+          setError(data.message);
+        }
+      } catch (error) {
+        console.log(error)
+        setError('terjadi kesalaha saat memuat data.');
+      }
+    }
 
-        setUserDetail(data.user.customClaims.fullName);
-      } catch (error) {}
-    };
-
-    fetchUserActiveDetail();
+    fetchUserProfile();
   }, []);
+  // useEffect(() => {
+  //   const fetchUserActiveDetail = async () => {
+  //     try {
+  //       const data = await fetchUser();
+  //       console.log(data);
+
+  //       setUserDetail(data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+
+  //   fetchUserActiveDetail();
+  // }, []);
 
   return (
     <div className="bg-primary h-full pt-[35px]">
@@ -70,7 +91,8 @@ export default function ProfilePage() {
 
           {/* Username */}
           <h1 className="text-text-primary font-semibold text-2xl mt-[60px] mb-6">
-            {userDetail}
+            {/* {userDetail} */}
+            {userDetail ? userDetail.fullName : 'Loading...'}
           </h1>
 
           {/* Options */}

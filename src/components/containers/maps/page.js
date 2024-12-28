@@ -5,7 +5,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine';
 import { getRvmLocations } from '@/services/location-service';
-import { getLocationName } from '../../../../utils/location';
+import { getLocationName } from '../../../utils/location';
 import Image from 'next/image';
 import { useLocation } from '@/context/location';
 
@@ -53,7 +53,7 @@ export default function Map() {
         {
           enableHighAccuracy: true,
           timeout: 10000,
-          maximumAge: 0
+          maximumAge: 0,
         }
       );
     });
@@ -64,16 +64,16 @@ export default function Map() {
       setIsLoading(true);
       const position = await getCurrentPosition();
       const { latitude, longitude } = position.coords;
-      
+
       setCurrentLocation([latitude, longitude]);
-      
+
       if (mapRef.current) {
         mapRef.current.setView([latitude, longitude], 14);
       }
-      
+
       const name = await getLocationName(latitude, longitude);
       setLocationName(name);
-      
+
       // Start watching position after getting initial location
       const watchId = navigator.geolocation.watchPosition(
         (position) => {
@@ -88,7 +88,7 @@ export default function Map() {
         {
           enableHighAccuracy: true,
           timeout: 5000,
-          maximumAge: 0
+          maximumAge: 0,
         }
       );
 
@@ -126,12 +126,15 @@ export default function Map() {
 
         // Initialize map and get locations
         await initializeMap();
-        
+
         // Get RVM locations
         const updatedRvmLocations = await getRvmLocations();
         const updatedMarkers = await Promise.all(
           updatedRvmLocations.map(async (marker) => {
-            const position = [marker.position.latitude, marker.position.longitude];
+            const position = [
+              marker.position.latitude,
+              marker.position.longitude,
+            ];
             const locationName = await getLocationName(
               marker.position.latitude,
               marker.position.longitude
@@ -148,7 +151,9 @@ export default function Map() {
 
   const handleMarkerClick = (rvm) => {
     if (!currentLocation) {
-      setLocationError('Please enable location services to see distance and routing');
+      setLocationError(
+        'Please enable location services to see distance and routing'
+      );
       return;
     }
 
@@ -258,7 +263,7 @@ export default function Map() {
             </Marker>
           ))}
       </MapContainer>
-    
+
       <button
         onClick={() => {
           if (!mapRef.current || !currentLocation) {
@@ -273,4 +278,4 @@ export default function Map() {
       </button>
     </div>
   );
-} 
+}

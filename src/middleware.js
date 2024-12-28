@@ -22,5 +22,5 @@ export function middleware(req) {
 }
 
 export const config = {
-  matcher: ['/home', '/login', '/profile/:path*'],
+  matcher: ['/home', '/login', '/profil/:path*', '/aktifitas', "/bottlein", "/qr"],
 };
